@@ -2,6 +2,7 @@ import json
 import sys
 from os.path import isdir, exists, join
 from os import listdir
+import argparse
 
 
 # Format either the whole folder or one file
@@ -11,7 +12,7 @@ def FormatJSON(path):
         for file_name in (elements):
             file_path=join(path, file_name)
             if (isdir(file_path)):
-                formatJson(file_path)
+                FormatJSON(file_path)
             else:
                 JSONfile = json.load(open(file_path, "r"))
                 with open(file_path, 'w') as f:
@@ -31,7 +32,7 @@ def DeFormatJSON(path):
         for file_name in (elements):
             file_path=join(path, file_name)
             if (isdir(file_path)):
-                formatJson(file_path)
+                DeFormatJSON(file_path)
             else:
                 JSONfile = json.load(open(file_path, "r"))
                 with open(file_path, 'w') as f:
@@ -47,17 +48,17 @@ def DeFormatJSON(path):
 
 if __name__ == "__main__":
     try:
-        operation=str(sys.argv[1])
-        path=str(sys.argv[2])
-        if (not path or not exists(path)):
-            raise EOFError
-        if (operation == "-d" or operation == "-f"):
-            for (path) in (sys.argv[2:]):
-                if operation == "-d":
-                    DeFormatJSON(path)
-                elif operation == "-f":
-                    FormatJSON(path)
-        else:
-            raise IndexError
+        parser=argparse.ArgumentParser(description="Formats or De-formats a JSON file, or a group of JSON files.")
+        parser.add_argument('-f','--format', help='Format the file/files in a directory', action="store_true")
+        parser.add_argument('-d','--deformat', help="De-Format the file/files in a directory", action="store_true")
+        parser.add_argument("Path",metavar="Path", type=str, help="Path or Paths to JSON file(s), or directories where to search for JSON files", nargs='+')
+        arguments=parser.parse_args()
+        if (arguments.format):
+            for path in (arguments.Path):
+                FormatJSON(path)
+        if (arguments.deformat):
+            for path in (arguments.Path):
+                DeFormatJSON(path)
+
     except:
-        print("Invalid usage!\n\nUsage: 'JSONCleaner.py -f/-d Path(s)'\n\t'-f' is for formatting the file/files in a directory\n\t'-d' is for de-formatting the file/files in a directory")
+       print ("Invalid usage!")
