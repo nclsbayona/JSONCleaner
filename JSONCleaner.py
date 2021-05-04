@@ -1,5 +1,4 @@
 import json
-import sys
 from os.path import isdir, exists, join
 from os import listdir
 import argparse
